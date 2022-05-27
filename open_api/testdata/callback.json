@@ -1,0 +1,12 @@
+{
+    "callbacks": {
+        "test1": {
+            "some_url": {
+                "summary": "summary1"
+            },
+            "other_url": {
+                "summary": "summary2"
+            }
+        }
+    }
+}

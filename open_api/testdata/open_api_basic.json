@@ -1,0 +1,30 @@
+{
+    "openapi": "3",
+    "info": {
+        "title": "Sample Pet Store App",
+        "version": "1.0.1"
+    },
+    "paths": {
+        "/home": {
+            "description": "homepage"
+        }
+    },
+    "tags": [
+        {
+            "name": "cat"
+        },
+        {
+            "name": "dog"
+        }
+    ],
+    "servers": [
+        {
+            "url": "https://random.fr",
+            "variables": {
+                "var1": {
+                    "default": "default"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,1790 @@
+---
+openapi: 3.0.3
+info:
+  title: srvc-moulinette API
+  version: 1.2.47-SNAPSHOT
+servers:
+- url: https://srvc-moulinette.api.assistants.epita.fr
+  description: Production server
+paths:
+  /batch:
+    get:
+      operationId: get-batch
+      tags:
+      - Batch Resource
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response9'
+    post:
+      operationId: post-batch
+      tags:
+      - Batch Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request1'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UUID'
+  /batch/default:
+    put:
+      operationId: put-batch-default
+      tags:
+      - Batch Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                format: uuid
+                pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                type: string
+      responses:
+        "204":
+          description: No Content
+  /batch/publish:
+    put:
+      operationId: put-batch-publish
+      tags:
+      - Batch Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request3'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response11'
+    delete:
+      tags:
+      - Batch Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response8'
+  /batch/{batchId}:
+    get:
+      tags:
+      - Batch Resource
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response10'
+    put:
+      tags:
+      - Batch Resource
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                format: uuid
+                pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                type: string
+      responses:
+        "204":
+          description: No Content
+  /batch/{batchId}/aggregate:
+    put:
+      tags:
+      - Batch Resource
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request2'
+        required: false
+      responses:
+        "204":
+          description: No Content
+  /batch/{batchId}/copyTo/{newSlug}:
+    post:
+      tags:
+      - Batch Resource
+      description: "Create a deep copy of the given batch, using the provided new\
+        \ slug. All jobs are copied with a new id and generated files set to null."
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - name: newSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UUID'
+  /batch/{batchId}/retry:
+    put:
+      tags:
+      - Batch Resource
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - name: sync
+        in: query
+        schema:
+          default: true
+          type: boolean
+      responses:
+        "204":
+          description: No Content
+  /job/aggregate:
+    put:
+      tags:
+      - Job Resource
+      description: Publish the aggregates for the jobs with the given ids.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                format: uuid
+                pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                type: string
+      responses:
+        "204":
+          description: No Content
+  /job/dispatch:
+    put:
+      tags:
+      - Job Resource
+      description: Dispatch the jobs with the given ids to MaaS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                format: uuid
+                pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                type: string
+      responses:
+        "204":
+          description: No Content
+  /job/files:
+    delete:
+      tags:
+      - Job Resource
+      description: Delete unnecessary temporary files for the given list of jobs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                format: uuid
+                pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                type: string
+      responses:
+        "204":
+          description: No Content
+  /job/maas:
+    post:
+      tags:
+      - Job Resource
+      description: Refresh status from Maas.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                format: uuid
+                pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response4'
+  /job/publish:
+    put:
+      tags:
+      - Job Resource
+      description: Publish (visible by students) the jobs with the given ids.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                format: uuid
+                pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                type: string
+      responses:
+        "204":
+          description: No Content
+    delete:
+      tags:
+      - Job Resource
+      description: Unpublish (not visible by students) jobs with the given ids
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                format: uuid
+                pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                type: string
+      responses:
+        "204":
+          description: No Content
+  /job/result/{jobId}:
+    post:
+      tags:
+      - Job Resource
+      description: Post the result of the job with the given id (usually a XML trace).
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              format: binary
+              type: string
+      responses:
+        "201":
+          description: Created
+  /job/retry:
+    put:
+      tags:
+      - Job Resource
+      description: "Retry the given list of jobs. If sync is enabled, moulinette URLs\
+        \ are synced with the submission beforehand."
+      parameters:
+      - name: sync
+        in: query
+        schema:
+          default: true
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                format: uuid
+                pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                type: string
+      responses:
+        "204":
+          description: No Content
+  /job/status/{jobId}:
+    post:
+      tags:
+      - Job Resource
+      description: "Callback from maas, updates the status of the job with the given\
+        \ id."
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostStatusCallbackRequest'
+      responses:
+        "201":
+          description: Created
+  /job/{activitySlug}:
+    put:
+      tags:
+      - Job Resource
+      description: "Put tags to the given activity from pseudo csv. Each line must\
+        \ be 'login,space-separated-tags"
+      parameters:
+      - name: activitySlug
+        in: path
+        required: true
+        schema:
+          type: string
+          nullable: false
+      - name: autoDispatch
+        in: query
+        schema:
+          default: true
+          type: boolean
+      - name: autoPublish
+        in: query
+        schema:
+          default: true
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "204":
+          description: No Content
+  /job/{jobId}:
+    get:
+      tags:
+      - Job Resource
+      description: Get the job with the given id.
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response2'
+  /job/{jobId}/aggregate:
+    put:
+      tags:
+      - Job Resource
+      description: Publish the aggregate for the job with the given id.
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+      responses:
+        "204":
+          description: No Content
+  /job/{jobId}/dispatch:
+    put:
+      tags:
+      - Job Resource
+      description: Dispatch the job with the given ids to MaaS
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+      responses:
+        "204":
+          description: No Content
+  /job/{jobId}/files:
+    delete:
+      tags:
+      - Job Resource
+      description: Delete unnecessary temporary files for the given job
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+      responses:
+        "204":
+          description: No Content
+  /job/{jobId}/publish:
+    put:
+      tags:
+      - Job Resource
+      description: Publish (visible by students) the job with the given id.
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+      responses:
+        "204":
+          description: No Content
+    delete:
+      tags:
+      - Job Resource
+      description: Unpublish (not visible by students) jobs with the given ids
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+      responses:
+        "204":
+          description: No Content
+  /job/{jobId}/retry:
+    put:
+      tags:
+      - Job Resource
+      description: "Retry the given job. If sync is enabled, moulinette URLs are synced\
+        \ with the submission beforehand."
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+      - name: sync
+        in: query
+        schema:
+          default: true
+          type: boolean
+      responses:
+        "204":
+          description: No Content
+  /job/{jobId}/status:
+    get:
+      tags:
+      - Job Resource
+      description: Get the status of the job with the given id.
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+  /job/{submissionSlug}/first:
+    get:
+      tags:
+      - Job Resource
+      description: Get the first submission of all groups for the given submission
+        slug.
+      parameters:
+      - name: submissionSlug
+        in: path
+        required: true
+        schema:
+          type: string
+          nullable: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response1'
+  /job/{submissionSlug}/last:
+    get:
+      tags:
+      - Job Resource
+      description: Get the last submission of all groups for the given submission
+        slug.
+      parameters:
+      - name: submissionSlug
+        in: path
+        required: true
+        schema:
+          type: string
+          nullable: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response3'
+  /kafka/aggregate:
+    put:
+      tags:
+      - Kafka Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutMessageRequest'
+      responses:
+        "200":
+          description: OK
+  /kafka/command:
+    put:
+      tags:
+      - Kafka Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutMessageRequest'
+      responses:
+        "200":
+          description: OK
+  /kafka/event:
+    put:
+      tags:
+      - Kafka Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutMessageRequest'
+      responses:
+        "200":
+          description: OK
+  /kafka/tags:
+    put:
+      tags:
+      - Kafka Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "204":
+          description: No Content
+  /kafka/technical:
+    put:
+      tags:
+      - Kafka Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutMessageRequest'
+      responses:
+        "200":
+          description: OK
+  /recovery/batch/{batchId}/lock:
+    put:
+      tags:
+      - Recovery Resource
+      description: Lock the job of the batch with the given id. A locked job is not
+        eligible to auto recovery.
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  format: uuid
+                  pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                  type: string
+    delete:
+      tags:
+      - Recovery Resource
+      description: Unlock the job of the batch with the given id. A locked job is
+        not eligible to auto recovery.
+      parameters:
+      - name: batchId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  format: uuid
+                  pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                  type: string
+  /recovery/configuration:
+    get:
+      tags:
+      - Recovery Resource
+      description: "Get the job recovering service configuration: \n - batchSize:\
+        \ maximum number of jobs retried per trigger.\n - maxMinutesLag: number of\
+        \ minutes before a job in a transitory state is considered lost, and thus,\
+        \ eligible to recovery. \n - retryMax: maximum number of automatic retries\
+        \ before the job is considered unsalvageable and locked (manual retries don't\
+        \ increment)."
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response13'
+    put:
+      tags:
+      - Recovery Resource
+      description: "Set the job recovering service configuration: \n - batchSize:\
+        \ maximum number of jobs retried per trigger.\n - maxMinutesLag: number of\
+        \ minutes before a job in a transitory state is considered lost, and thus,\
+        \ eligible to recovery. \n - retryMax: maximum number of automatic retries\
+        \ before the job is considered unsalvageable and locked (manual retries don't\
+        \ increment)."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request4'
+      responses:
+        "204":
+          description: No Content
+  /recovery/jobs/lock:
+    put:
+      tags:
+      - Recovery Resource
+      description: Lock the jobs with the given ids. A locked job is not eligible
+        to auto recovery.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                format: uuid
+                pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  format: uuid
+                  pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                  type: string
+    delete:
+      tags:
+      - Recovery Resource
+      description: Unlock the jobs with the given ids. A locked job is not eligible
+        to auto recovery.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                format: uuid
+                pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  format: uuid
+                  pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                  type: string
+  /recovery/recover/{batchSize}:
+    post:
+      tags:
+      - Recovery Resource
+      description: Start a job recovering batch up to the given size. Jobs are taken
+        from the newest to oldest.
+      parameters:
+      - name: batchSize
+        in: path
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  format: uuid
+                  pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                  type: string
+  /service/status:
+    get:
+      tags:
+      - Srvc Moulinette Resource
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response14'
+    put:
+      tags:
+      - Srvc Moulinette Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request5'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response15'
+  /statistics/assignments/{activitySlug}:
+    get:
+      tags:
+      - Statistics Resource
+      parameters:
+      - name: activitySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response6'
+  /statistics/results/{activitySlugs}/csv:
+    get:
+      tags:
+      - Statistics Resource
+      parameters:
+      - name: activitySlugs
+        in: path
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PathSegment'
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+  /statistics/results/{activitySlugs}/json:
+    get:
+      tags:
+      - Statistics Resource
+      parameters:
+      - name: activitySlugs
+        in: path
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PathSegment'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response7'
+  /statistics/{activitySlug}:
+    get:
+      tags:
+      - Statistics Resource
+      parameters:
+      - name: activitySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response5'
+  /submission/{activitySlug}:
+    get:
+      tags:
+      - Submission Resource
+      parameters:
+      - name: activitySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+  /trace/move/{fromSubmissionSlug}/{toSubmissionSlug}:
+    post:
+      tags:
+      - Trace Resource
+      parameters:
+      - name: fromSubmissionSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: toSubmissionSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response12'
+  /trace/{activitySlug}:
+    put:
+      tags:
+      - Trace Resource
+      parameters:
+      - name: activitySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+    delete:
+      tags:
+      - Trace Resource
+      parameters:
+      - name: activitySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+  /trace/{activitySlug}/rebuildGroupSlugs:
+    post:
+      tags:
+      - Trace Resource
+      parameters:
+      - name: activitySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  format: uuid
+                  pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                  type: string
+  /trace/{activitySlug}/{assignmentSlug}:
+    put:
+      tags:
+      - Trace Resource
+      parameters:
+      - name: activitySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: assignmentSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+    delete:
+      tags:
+      - Trace Resource
+      parameters:
+      - name: activitySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: assignmentSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+  /trace/{activitySlug}/{assignmentSlug}/move/{fromSubmissionSlug}/{toSubmissionSlug}:
+    post:
+      tags:
+      - Trace Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubmissionRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response12'
+  /trace/{activitySlug}/{assignmentSlug}/{submissionSlug}:
+    post:
+      tags:
+      - Trace Resource
+      parameters:
+      - name: activitySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: assignmentSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: submissionSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutTraceBatchRequest'
+      responses:
+        "200":
+          description: OK
+  /trace/{activity}/{assignment}/{submission}/{index}/{login}:
+    post:
+      tags:
+      - Trace Resource
+      parameters:
+      - name: activity
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: assignment
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: index
+        in: path
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - name: login
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: submission
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/xml:
+            schema:
+              type: string
+      responses:
+        "201":
+          description: Created
+  /trace/{login}/{activitySlug}:
+    get:
+      tags:
+      - Trace Resource
+      parameters:
+      - name: activitySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: login
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllTracesByLoginAndActivityResponse'
+components:
+  schemas:
+    Batch:
+      required:
+      - id
+      - slug
+      - submissionSlug
+      type: object
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+        isDefault:
+          type: boolean
+        slug:
+          type: string
+          nullable: false
+        submissionSlug:
+          type: string
+          nullable: false
+        default:
+          type: boolean
+    GetAllTracesByLoginAndActivityResponse:
+      type: object
+      properties:
+        activity:
+          type: string
+        login:
+          type: string
+        traces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trace'
+    Job:
+      type: object
+      properties:
+        activitySlug:
+          type: string
+        assignmentSlug:
+          type: string
+        author:
+          type: string
+        batchId:
+          $ref: '#/components/schemas/UUID'
+        bundleUrl:
+          type: string
+        groupSlug:
+          type: string
+        id:
+          $ref: '#/components/schemas/UUID'
+        maasPipelineId:
+          $ref: '#/components/schemas/UUID'
+        maasSubmissionUrl:
+          type: string
+        published:
+          type: boolean
+        repository:
+          type: string
+        status:
+          type: string
+        submissionSlug:
+          type: string
+        successPercent:
+          format: int32
+          type: integer
+        tag:
+          type: string
+        tagTime:
+          format: date-time
+          type: string
+        testSuiteUrl:
+          type: string
+        traceUrl:
+          type: string
+        workflowUrl:
+          type: string
+    JobAggregate:
+      type: object
+      properties:
+        descriptor:
+          type: string
+        activitySlug:
+          type: string
+        assignmentSlug:
+          type: string
+        author:
+          type: string
+        autoDispatch:
+          type: boolean
+        autoPublish:
+          type: boolean
+        batchId:
+          $ref: '#/components/schemas/UUID'
+        batchSlug:
+          type: string
+        bundleUrl:
+          type: string
+        groupSlug:
+          type: string
+        id:
+          $ref: '#/components/schemas/UUID'
+        maasPipelineId:
+          $ref: '#/components/schemas/UUID'
+        maasSubmissionUrl:
+          type: string
+        published:
+          type: boolean
+        repository:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status'
+        submissionSlug:
+          type: string
+        successPercent:
+          format: int32
+          type: integer
+        tag:
+          type: string
+        tagTime:
+          format: date-time
+          type: string
+        testSuiteUrl:
+          type: string
+        traceUrl:
+          type: string
+        workflowUrl:
+          type: string
+    JobStatus:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        status:
+          $ref: '#/components/schemas/Status2'
+    MultivaluedMapStringString:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+    Notion:
+      type: object
+      properties:
+        isValidated:
+          type: boolean
+        name:
+          type: string
+        score:
+          format: int32
+          type: integer
+        threshold:
+          format: int32
+          type: integer
+        validated:
+          type: boolean
+    PathSegment:
+      type: object
+      properties:
+        path:
+          type: string
+        matrixParameters:
+          $ref: '#/components/schemas/MultivaluedMapStringString'
+    PipelineStatus:
+      enum:
+      - CANCELLED
+      - ENDED
+      - FAILED
+      - INTERRUPTED
+      - RUNNING
+      - SCHEDULED
+      - SETUP
+      - WAITING
+      type: string
+    PostStatusCallbackRequest:
+      type: object
+      properties:
+        pipelineId:
+          $ref: '#/components/schemas/UUID'
+        pipelineStatus:
+          $ref: '#/components/schemas/PipelineStatus'
+    PutMessageRequest:
+      type: object
+      properties:
+        payloadType:
+          type: string
+    PutTraceBatchRequest:
+      type: object
+      properties:
+        publish:
+          type: boolean
+        tag:
+          type: string
+        tagTime:
+          format: date-time
+          type: string
+        traceArchiveUrl:
+          type: string
+    Request:
+      required:
+      - batchId
+      type: object
+      properties:
+        batchId:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+    Request1:
+      required:
+      - isDefault
+      - slug
+      - submissionSlug
+      type: object
+      properties:
+        isDefault:
+          type: boolean
+          nullable: false
+        slug:
+          type: string
+          nullable: false
+        submissionSlug:
+          type: string
+          nullable: false
+        default:
+          type: boolean
+    Request2:
+      type: object
+      properties:
+        from:
+          format: date-time
+          type: string
+        to:
+          format: date-time
+          type: string
+    Request3:
+      required:
+      - batchId
+      type: object
+      properties:
+        batchId:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+        from:
+          format: date-time
+          type: string
+        to:
+          format: date-time
+          type: string
+    Request4:
+      type: object
+      properties:
+        batchSize:
+          format: int32
+          type: integer
+        enabled:
+          type: boolean
+        maxMinutesLag:
+          format: int32
+          type: integer
+        retryMax:
+          format: int32
+          type: integer
+    Request5:
+      type: object
+      properties:
+        autoDispatchEnabled:
+          type: boolean
+        autoPrepareEnabled:
+          type: boolean
+        autoPublishEnabled:
+          type: boolean
+    Response:
+      type: object
+      properties:
+        submissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Submission'
+    Response1:
+      type: object
+      properties:
+        jobList:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobAggregate'
+    Response10:
+      required:
+      - id
+      - slug
+      - submissionSlug
+      type: object
+      properties:
+        id:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+        isDefault:
+          type: boolean
+        jobList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Job'
+        slug:
+          type: string
+          nullable: false
+        submissionSlug:
+          type: string
+          nullable: false
+        default:
+          type: boolean
+    Response11:
+      required:
+      - batchId
+      type: object
+      properties:
+        batchId:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+        from:
+          format: date-time
+          type: string
+        publishedJobList:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+        to:
+          format: date-time
+          type: string
+    Response12:
+      type: object
+      properties:
+        jobIdList:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+        nbJobs:
+          format: int32
+          type: integer
+    Response13:
+      type: object
+      properties:
+        batchSize:
+          format: int32
+          type: integer
+        enabled:
+          type: boolean
+        maxMinutesLag:
+          format: int32
+          type: integer
+        retryMax:
+          format: int32
+          type: integer
+    Response14:
+      type: object
+      properties:
+        autoDispatchEnabled:
+          type: boolean
+        autoPrepareEnabled:
+          type: boolean
+        autoPublishEnabled:
+          type: boolean
+    Response15:
+      type: object
+      properties:
+        autoDispatchEnabled:
+          type: boolean
+        autoPrepareEnabled:
+          type: boolean
+        autoPublishEnabled:
+          type: boolean
+    Response2:
+      type: object
+      properties:
+        activitySlug:
+          type: string
+        assignmentSlug:
+          type: string
+        author:
+          type: string
+        batchId:
+          $ref: '#/components/schemas/UUID'
+        bundleUrl:
+          type: string
+        groupSlug:
+          type: string
+        id:
+          $ref: '#/components/schemas/UUID'
+        maasPipelineId:
+          $ref: '#/components/schemas/UUID'
+        maasSubmissionUrl:
+          type: string
+        published:
+          type: boolean
+        repository:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status1'
+        submissionSlug:
+          type: string
+        successPercent:
+          format: int32
+          type: integer
+        tag:
+          type: string
+        tagTime:
+          format: date-time
+          type: string
+        testSuiteUrl:
+          type: string
+        traceUrl:
+          type: string
+        workflowUrl:
+          type: string
+    Response3:
+      type: object
+      properties:
+        jobList:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobAggregate'
+    Response4:
+      type: object
+      properties:
+        jobStatusList:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobStatus'
+    Response5:
+      type: object
+      properties:
+        validatedSubmissionList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidatedSubmission'
+    Response6:
+      type: object
+      properties:
+        validatedPerGroup:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    Response7:
+      type: object
+      properties:
+        notionThresholds:
+          type: object
+          additionalProperties:
+            format: int32
+            type: integer
+        results:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Result'
+    Response8:
+      required:
+      - batchId
+      type: object
+      properties:
+        batchId:
+          allOf:
+          - $ref: '#/components/schemas/UUID'
+          - nullable: false
+        publishedJobList:
+          type: array
+          items:
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            type: string
+    Response9:
+      required:
+      - batchList
+      type: object
+      properties:
+        batchList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Batch'
+          nullable: false
+    Result:
+      type: object
+      properties:
+        isWorkshopValidated:
+          type: boolean
+        login:
+          type: string
+        notions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Notion'
+        validatedAssignments:
+          type: array
+          items:
+            type: string
+        workshopValidated:
+          type: boolean
+    Status:
+      enum:
+      - DISPATCHED
+      - FAILED
+      - FAILED_PREPARATION
+      - IDLE
+      - PREPARED
+      - PREPARING
+      - QUOTA_EXCEEDED
+      - SUCCEEDED
+      - UPLOADED
+      type: string
+    Status1:
+      enum:
+      - DISPATCHED
+      - FAILED
+      - FAILED_PREPARATION
+      - IDLE
+      - PREPARED
+      - PREPARING
+      - QUOTA_EXCEEDED
+      - SUCCEEDED
+      - UPLOADED
+      type: string
+    Status2:
+      enum:
+      - DISPATCHED
+      - FAILED
+      - FAILED_PREPARATION
+      - IDLE
+      - PREPARED
+      - PREPARING
+      - QUOTA_EXCEEDED
+      - SUCCEEDED
+      - UPLOADED
+      type: string
+    Status3:
+      enum:
+      - DISPATCHED
+      - FAILED
+      - FAILED_PREPARATION
+      - IDLE
+      - PREPARED
+      - PREPARING
+      - QUOTA_EXCEEDED
+      - SUCCEEDED
+      - UPLOADED
+      type: string
+    Submission:
+      type: object
+      properties:
+        activitySlug:
+          type: string
+        assignmentSlug:
+          type: string
+        autoDispatch:
+          type: boolean
+        autoPublish:
+          type: boolean
+        submissionSlug:
+          type: string
+        testSuiteUrl:
+          type: string
+        type:
+          $ref: '#/components/schemas/Type'
+        workflowUrl:
+          type: string
+    Trace:
+      type: object
+      properties:
+        activitySlug:
+          type: string
+        assignmentSlug:
+          type: string
+        author:
+          type: string
+        batchSlug:
+          type: string
+        bundleUrl:
+          type: string
+        groupSlug:
+          type: string
+        id:
+          $ref: '#/components/schemas/UUID'
+        maasPipelineId:
+          $ref: '#/components/schemas/UUID'
+        maasSubmissionUrl:
+          type: string
+        published:
+          type: boolean
+        repository:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status3'
+        submissionSlug:
+          type: string
+        tag:
+          type: string
+        tagTime:
+          format: date-time
+          type: string
+        testSuiteUrl:
+          type: string
+        traceUrl:
+          type: string
+        workflowUrl:
+          type: string
+    Type:
+      enum:
+      - CONTINUOUS
+      - DEMENTOR
+      - FIRST_OF_DAY
+      - LIMIT_2
+      - LIMIT_3
+      - LIMIT_5
+      - TEST
+      - UNIQUE
+      type: string
+    UUID:
+      format: uuid
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      type: string
+    UpdateSubmissionRequest:
+      required:
+      - activitySlug
+      - assignmentSlug
+      - fromSubmissionSlug
+      - toSubmissionSlug
+      type: object
+      properties:
+        activitySlug:
+          pattern: \S
+          type: string
+          nullable: false
+        assignmentSlug:
+          pattern: \S
+          type: string
+          nullable: false
+        fromSubmissionSlug:
+          pattern: \S
+          type: string
+          nullable: false
+        toSubmissionSlug:
+          pattern: \S
+          type: string
+          nullable: false
+    ValidatedSubmission:
+      type: object
+      properties:
+        assignmentSlug:
+          type: string
+        groupSlug:
+          type: string
+        tagTime:
+          format: date-time
+          type: string
