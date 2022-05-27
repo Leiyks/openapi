@@ -1,6 +1,6 @@
 Module {
-	name: 'OpenApi3'
-	description: 'Parse OpenApi3.0 specification to usable structs'
+	name: 'open_api'
+	description: 'Parse OpenApi3.0 files into usable structs'
 	version: '0.0.1'
 	license: 'MIT'
 	dependencies: []
