@@ -1,9 +1,10 @@
-import openapi
+module openapi
+
 import os
 
 fn test_basic_open_api_struct() ? {
 	content := os.read_file(@VMODROOT + '/testdata/open_api_basic.json')?
-	open_api := openapi.decode<openapi.OpenApi>(content)?
+	open_api := decode<OpenApi>(content)?
 	assert open_api.openapi == '3'
 	assert open_api.info.title == 'Sample Pet Store App'
 	assert open_api.info.version == '1.0.1'
@@ -23,19 +24,19 @@ fn test_basic_open_api_struct() ? {
 }
 
 fn test_open_api_struct_without_paths() ? {
-	content := '{ "openapi": "3", "info": {"title": "oui", "version": "1"} }'
-	info := openapi.decode<openapi.OpenApi>(content) or { return }
+	content := '{ "open_api": "3", "info": {"title": "oui", "version": "1"} }'
+	info := decode<OpenApi>(content) or { return }
 	assert false
 }
 
 fn test_open_api_struct_without_info() ? {
-	content := '{ "openapi": "3", "paths": {} }'
-	info := openapi.decode<openapi.OpenApi>(content) or { return }
+	content := '{ "open_api": "3", "paths": {} }'
+	info := decode<OpenApi>(content) or { return }
 	assert false
 }
 
 fn test_open_api_struct_without_openapi() ? {
 	content := '{ "info": {"title": "oui", "version": "1"}, "paths": {} }'
-	info := openapi.decode<openapi.OpenApi>(content) or { return }
+	info := decode<OpenApi>(content) or { return }
 	assert false
 }

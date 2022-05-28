@@ -1,9 +1,10 @@
-import openapi
+module openapi
+
 import os
 
 fn test_components_struct() ? {
 	content := os.read_file(@VMODROOT + '/testdata/components.json')?
-	components := openapi.decode<openapi.Components>(content)?
+	components := decode<Components>(content)?
 
 	assert components.schemas.len == 3
 	assert components.parameters.len == 3

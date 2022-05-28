@@ -1,22 +1,23 @@
-import openapi
+module openapi
+
 import os
 
 fn test_basic_info_struct() ? {
 	content := '{ "title": "random", "version": "1.0.1" }'
-	info := openapi.decode<openapi.Info>(content)?
+	info := decode<Info>(content)?
 	assert info.title == 'random'
 	assert info.version == '1.0.1'
 }
 
 fn test_info_struct_without_required() ? {
 	content := '{ "title": "random" }'
-	info := openapi.decode<openapi.Info>(content) or { return }
+	info := decode<Info>(content) or { return }
 	assert false
 }
 
 fn test_full_info_struct() ? {
 	content := os.read_file(@VMODROOT + '/testdata/info.json')?
-	info := openapi.decode<openapi.Info>(content)?
+	info := decode<Info>(content)?
 	assert info.title == 'Sample Pet Store App'
 	assert info.version == '1.0.1'
 	assert info.description == 'This is a sample server for a pet store.'
